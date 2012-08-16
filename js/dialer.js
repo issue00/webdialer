@@ -37,10 +37,10 @@ var currentState = "idle";
 function onMouseDown(event) 
 {	
 
-	var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
-	
-	if (selectedObj && selectedObj.onClick)
-	    selectedObj.onClick(event);
+    var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
+
+    if (selectedObj && selectedObj.onClick)
+	selectedObj.onClick(event);
 
     prevXMouse = event.clientX;
     prevYMouse = event.clientY;
@@ -48,10 +48,10 @@ function onMouseDown(event)
 
 function onMouseMove(event) 
 {
- 	var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
-	if (selectedObj && selectedObj.onMove)
-	    selectedObj.onMove(event)
-   
+    var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
+    if (selectedObj && selectedObj.onMove)
+	selectedObj.onMove(event);
+
     prevXMouse = event.clientX;
     prevYMouse = event.clientY; 	
 }
@@ -76,7 +76,7 @@ function resizeCanvas()
     $(mouseClicksLayer).attr('height', screenHeight);
 
     if (currentPage)
-		initPages();   
+	initPages();   
 }
 
 function loadImages(sources, callback)
@@ -86,42 +86,42 @@ function loadImages(sources, callback)
 
     for (var src in sources) 
     {
-		numImages++;
+	numImages++;
     }
     for (var src in sources) 
     {
-		images[src] = new Image();
-		images[src].onload = function(){
-		    if (++loadedImages >= numImages) {		
-			callback(images);
-		    }
-		};
-		images[src].src = sources[src];
+	images[src] = new Image();
+	images[src].onload = function(){
+	    if (++loadedImages >= numImages) {		
+		callback(images);
+	    }
+	};
+	images[src].src = sources[src];
     }
 }
 
 function handleMsg(incomingMsg)
 {
-	if (incomingMsg.event)
+    if (incomingMsg.event)
+    {
+	switch (incomingMsg.event)
 	{
-		switch (incomingMsg.event)
-		{
-			case "incoming_call":
-				currentState = "incomingCall";
-				initCallPage("incomingCall");
-				switchMenu("callPage");
-			break;
-			default:
-			break;
-		}
+	    case "incoming_call":
+		currentState = "incomingCall";
+		initCallPage("incomingCall");
+		switchMenu("callPage");
+		break;
+	    default:
+		break;
 	}
+    }
 }
 
 function connect()
 {
     var host = window.location.hostname;
-	ws = new WebSocket("ws://localhost:9999/");
-  
+    ws = new WebSocket("ws://localhost:9999/");
+
     ws.onopen = function() {
 	send({
 		"type": "connect",
@@ -130,14 +130,14 @@ function connect()
     };
 
     ws.onmessage = function (e) {
-		jsonMsg = JSON.parse(e.data);
-		handleMsg(jsonMsg);
-		console.log(e.data);
+	jsonMsg = JSON.parse(e.data);
+	handleMsg(jsonMsg);
+	console.log(e.data);
     };
 
     ws.onclose = function(e) {
-		alert("Connecition closed");
-		console.log(e);
+	alert("Connecition closed");
+	console.log(e);
     };
 }
 
@@ -159,33 +159,33 @@ function init()
     mainCtx = mainCanvas.getContext("2d");
     bgCtx = bgCanvas.getContext("2d");
     buttonCtx = buttonCanvas.getContext("2d");
-   
+
     var sources = {
-		phoneIcon: "images/bluetooth-smartphone.png",
-		callButton: "images/ivi_btn-call.png",
-		callButtonPressed: "images/ivi_btn-call-active.png",
-		closeButton: "images/ivi_btn-close.png",
-		deleteButton: "images/ivi_btn-delete.png",
-		deleteButtonActive: "images/ivi_btn-delete-active.png",
-		endCallButton: "images/ivi_btn-endcall.png",
-		endCallButtonActive: "images/ivi_btn-endcall-active.png",
-		incomingAcceptButton: "images/ivi_btn-incomingcall-accept.png",
-		incomingAcceptButtonActive: "images/ivi_btn-incomingcall-accept-active.png",
-		incomingDeclineButton: "images/ivi_btn-incomingcall-decline.png",
-		incomingDeclineButtonActive: "images/ivi_btn-incomingcall-decline-active.png",
-		listItem: "images/ivi_btn-list.png",
-		listItemActive: "images/ivi_btn-list-active.png",
-		numberButton: "images/ivi_btn-numbers.png",
-		numberButtonActive: "images/ivi_btn-numbers-active.png",
-		buttonBG: "images/ivi_buttonarea.png",
-		callIcon: "images/ivi_icon-call.png",
-		deleteIcon: "images/ivi_icon-delete.png",
-		endCallIcon: "images/ivi_icon-endcall.png",
-		deleteListItemIcon: "images/ivi_icon-list-delete.png",
-		deleteListItemIconActive: "images/ivi_icon-list-delete-active.png",
-		clockIcon: "images/ivi_icon-time.png",
-		textArea: "images/ivi_textarea.png",
-		bgImage: "images/ivi-v1_ivi-background.jpg" 
+	   phoneIcon: "images/bluetooth-smartphone.png",
+	   callButton: "images/ivi_btn-call.png",
+	   callButtonPressed: "images/ivi_btn-call-active.png",
+	   closeButton: "images/ivi_btn-close.png",
+	   deleteButton: "images/ivi_btn-delete.png",
+	   deleteButtonActive: "images/ivi_btn-delete-active.png",
+	   endCallButton: "images/ivi_btn-endcall.png",
+	   endCallButtonActive: "images/ivi_btn-endcall-active.png",
+	   incomingAcceptButton: "images/ivi_btn-incomingcall-accept.png",
+	   incomingAcceptButtonActive: "images/ivi_btn-incomingcall-accept-active.png",
+	   incomingDeclineButton: "images/ivi_btn-incomingcall-decline.png",
+	   incomingDeclineButtonActive: "images/ivi_btn-incomingcall-decline-active.png",
+	   listItem: "images/ivi_btn-list.png",
+	   listItemActive: "images/ivi_btn-list-active.png",
+	   numberButton: "images/ivi_btn-numbers.png",
+	   numberButtonActive: "images/ivi_btn-numbers-active.png",
+	   buttonBG: "images/ivi_buttonarea.png",
+	   callIcon: "images/ivi_icon-call.png",
+	   deleteIcon: "images/ivi_icon-delete.png",
+	   endCallIcon: "images/ivi_icon-endcall.png",
+	   deleteListItemIcon: "images/ivi_icon-list-delete.png",
+	   deleteListItemIconActive: "images/ivi_icon-list-delete-active.png",
+	   clockIcon: "images/ivi_icon-time.png",
+	   textArea: "images/ivi_textarea.png",
+	   bgImage: "images/ivi-v1_ivi-background.jpg" 
     };
 
     loadImages(sources, resizeCanvas);
@@ -212,8 +212,8 @@ function initPages()
 {
     initMainPage();
     initCallPage(currentState);
-   
-	bgCtx.drawImage(images.bgImage, 0, 0, screenWidth, screenHeight);
+
+    bgCtx.drawImage(images.bgImage, 0, 0, screenWidth, screenHeight);
     currentPage.drawMenu();
 }
 

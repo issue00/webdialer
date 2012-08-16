@@ -52,9 +52,9 @@ ButtonObject.prototype.update = function(args)
     if (args.onClick) {this.onClick = args.onClick;}	
     if (args.onHold) {this.onHold = args.onHold;}	
     if (args.onMove) {this.onMove = args.onMove;}	
-    
-      /* Img shadow styles */
- 	if (args.shadowOffsetX) {this.shadowOffsetX = args.shadowOffsetX;}
+
+    /* Img shadow styles */
+    if (args.shadowOffsetX) {this.shadowOffsetX = args.shadowOffsetX;}
     if (args.shadowOffsetY) {this.shadowOffsetY = args.shadowOffsetY;} 
     if (args.shadowBlur) {this.shadowBlur = args.shadowBlur;}
     if (args.shadowColor) {this.shadowColor = args.shadowColor;}
@@ -64,22 +64,22 @@ ButtonObject.prototype.drawObj = function()
 {
     if (this.visible)
     {		
-		this.ctx.save();
-	
-		this.ctx.shadowBlur = this.shadowBlur;   
-		this.ctx.shadowColor = this.shadowColor;   
-		this.ctx.shadowOffsetX = this.shadowOffsetX;   
-		this.ctx.shadowOffsetY = this.shadowOffsetY;
-	
-		this.ctx.drawImage(this.img, this.xLoc, this.yLoc, this.width, this.height);
-	
-		this.ctx.restore();
+	this.ctx.save();
 
-		if (this.textObj != undefined)
-		    this.textObj.drawObj();
-		
-		if (this.icon != undefined)
-			this.icon.drawObj();
+	this.ctx.shadowBlur = this.shadowBlur;   
+	this.ctx.shadowColor = this.shadowColor;   
+	this.ctx.shadowOffsetX = this.shadowOffsetX;   
+	this.ctx.shadowOffsetY = this.shadowOffsetY;
+
+	this.ctx.drawImage(this.img, this.xLoc, this.yLoc, this.width, this.height);
+
+	this.ctx.restore();
+
+	if (this.textObj != undefined)
+	    this.textObj.drawObj();
+
+	if (this.icon != undefined)
+	    this.icon.drawObj();
     }
 }
 

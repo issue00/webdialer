@@ -25,56 +25,56 @@ MenuObject.prototype.addObject = function(ctx, objType, args)
 {
     if (ctx && objType)
     {
-		var tmpObj;
-		var index = -1;
-		
-		for (var i = 0; i < this.canvasObjs.length; i++)
-		{
-			if (this.canvasObjs[i].name === args.name)
-			{
-				index = i;
-				break;
-			}					
-		}
-		
-		if (index !== -1)
-		{
-			this.canvasObjs[index].update(args);	
-		}	
-		else
-		{	
-			switch(objType)
-			{
-			    case "button":
-				tmpObj = new ButtonObject(ctx, args);
-				if (tmpObj)
-				    this.canvasObjs.push(tmpObj);
-				break;
-			    case "text":
-				tmpObj = new TextObject(ctx, args);
-				if (tmpObj)
-				    this.canvasObjs.push(tmpObj);
-				break;
-			    case "image":
-				tmpObj = new ImageObject(ctx, args);
-				if (tmpObj)
-				    this.canvasObjs.push(tmpObj);
-				break;
-			    case "shape":
-				tmpObj = new ShapeObject(ctx, args);
-				if (tmpObj)
-				    this.canvasObjs.push(tmpObj);
-				break;
-				default:
-				console.log("Error: Unknown object type = " + objType);
-				break;			
-			}
-		}
+	var tmpObj;
+	var index = -1;
+
+	for (var i = 0; i < this.canvasObjs.length; i++)
+	{
+	    if (this.canvasObjs[i].name === args.name)
+	    {
+		index = i;
+		break;
+	    }					
+	}
+
+	if (index !== -1)
+	{
+	    this.canvasObjs[index].update(args);	
+	}	
+	else
+	{	
+	    switch(objType)
+	    {
+		case "button":
+		    tmpObj = new ButtonObject(ctx, args);
+		    if (tmpObj)
+			this.canvasObjs.push(tmpObj);
+		    break;
+		case "text":
+		    tmpObj = new TextObject(ctx, args);
+		    if (tmpObj)
+			this.canvasObjs.push(tmpObj);
+		    break;
+		case "image":
+		    tmpObj = new ImageObject(ctx, args);
+		    if (tmpObj)
+			this.canvasObjs.push(tmpObj);
+		    break;
+		case "shape":
+		    tmpObj = new ShapeObject(ctx, args);
+		    if (tmpObj)
+			this.canvasObjs.push(tmpObj);
+		    break;
+		default:
+		    console.log("Error: Unknown object type = " + objType);
+		    break;			
+	    }
+	}
     }
     if (tmpObj)
-		return this.canvasObjs[this.canvasObjs.length - 1];
-	else if (index > -1)
-		return this.canvasObjs[index];
+	return this.canvasObjs[this.canvasObjs.length - 1];
+    else if (index > -1)
+	return this.canvasObjs[index];
 }
 
 MenuObject.prototype.addIconGrid = function(iconNames, iconImages, iconWidth, iconHeight, spacer, minXSpace, gridYPosition)
@@ -87,15 +87,15 @@ MenuObject.prototype.addIconGrid = function(iconNames, iconImages, iconWidth, ic
 
     for (var i = 0; i < iconImages.length; i++)	
     {
-		this.addObject(buttonCtx, "button", {"name" : iconNames[i], "image": iconImages[i], "xLoc" : iconXPosition, "yLoc" : iconYPosition, "width" : iconWidth, "height" : iconHeight} );		
-	
-		iconXPosition += (iconWidth + spacer);
-	
-		if ((i + 1) % iconsPerRow === 0)
-		{
-		    iconYPosition += (iconHeight + spacer);
-		    iconXPosition = firstIconXPosition;
-		}					
+	this.addObject(buttonCtx, "button", {"name" : iconNames[i], "image": iconImages[i], "xLoc" : iconXPosition, "yLoc" : iconYPosition, "width" : iconWidth, "height" : iconHeight} );		
+
+	iconXPosition += (iconWidth + spacer);
+
+	if ((i + 1) % iconsPerRow === 0)
+	{
+	    iconYPosition += (iconHeight + spacer);
+	    iconXPosition = firstIconXPosition;
+	}					
     }	
 }
 
@@ -111,17 +111,17 @@ MenuObject.prototype.drawMenu = function()
 {
     if (this.visible != false)
     {		
-	    clearCanvas();
-	    for (var canvObjIter = 0; canvObjIter < this.canvasObjs.length; canvObjIter++)			
+	clearCanvas();
+	for (var canvObjIter = 0; canvObjIter < this.canvasObjs.length; canvObjIter++)			
+	{
+	    if (this.canvasObjs[canvObjIter].visible != false)
 	    {
-			if (this.canvasObjs[canvObjIter].visible != false)
-			{
-				if (this.canvasObjs[canvObjIter].largeShadow)
-				    this.canvasObjs[canvObjIter].drawLargeShadow();
-				else
-				    this.canvasObjs[canvObjIter].drawObj();
-			}
+		if (this.canvasObjs[canvObjIter].largeShadow)
+		    this.canvasObjs[canvObjIter].drawLargeShadow();
+		else
+		    this.canvasObjs[canvObjIter].drawObj();
 	    }
+	}
     }
 }
 
@@ -129,11 +129,11 @@ MenuObject.prototype.editText= function(objName, newData)
 {
     for (var i = 0; i < this.canvasObjs.length; i++)
     {
-		if (this.canvasObjs[i].name === objName)
-		{
-		    this.canvasObjs[i].text = newData;
-		    i = this.canvasObjs.length;
-		}
+	if (this.canvasObjs[i].name === objName)
+	{
+	    this.canvasObjs[i].text = newData;
+	    i = this.canvasObjs.length;
+	}
     }	
 }
 
@@ -141,9 +141,9 @@ MenuObject.prototype.getObj= function(objName)
 {
     for (var i = 0; i < this.canvasObjs.length; i++)
     {
-		if (this.canvasObjs[i].name === objName)
-		{
-		    return this.canvasObjs[i];
-		}
+	if (this.canvasObjs[i].name === objName)
+	{
+	    return this.canvasObjs[i];
+	}
     }	
 }

@@ -35,7 +35,7 @@ ShapeObject = function(ctx, args)
 
 ShapeObject.prototype.update = function(args)
 {
-	if (args.name) {this.name = args.name;}    
+    if (args.name) {this.name = args.name;}    
     if (args.img) {this.img = args.img;}
     if (args.xLoc) {this.xLoc = args.xLoc;}
     if (args.yLoc) {this.yLoc = args.yLoc;}
@@ -46,8 +46,8 @@ ShapeObject.prototype.update = function(args)
     if (args.text) {this.textObj.update({"text" : args.text, "xLoc" : (args.xLoc + (args.width / 2)), "yLoc" : (args.yLoc + (args.height / 2)), "zLoc" : (args.zLoc + 1), "template" : args.textTemplate})}
     if (args.visible) {this.visible = args.visible;}
     if (args.onClick) {this.onClick = args.onClick;}	
-    
-     /* Img shadow styles */
+
+    /* Img shadow styles */
     if (args.shadowOffsetX) {this.shadowOffsetX = args.shadowOffsetX;}
     if (args.shadowOffsetY) {this.shadowOffsetY = args.shadowOffsetY;} 
     if (args.shadowBlur) {this.shadowBlur = args.shadowBlur;}
@@ -58,21 +58,21 @@ ShapeObject.prototype.drawObj = function()
 {
     if (this.visible)
     {		
-		this.ctx.save();
+	this.ctx.save();
 
-		this.ctx.fillStyle = this.fillStyle;
-		this.ctx.fillRect(this.xLoc, this.yLoc, this.width, this.height);
-		
-		if (this.strokeStyle)
-		{
-			this.ctx.strokeStyle = this.strokeStyle;		
-			this.ctx.lineWidth = this.lineWidth;
-			this.ctx.strokeRect(this.xLoc, this.yLoc, this.width, this.height);
-		}
-		
-		if (this.textObj != undefined)
-		    this.textObj.drawObj();			
-		
-		this.ctx.restore();
+	this.ctx.fillStyle = this.fillStyle;
+	this.ctx.fillRect(this.xLoc, this.yLoc, this.width, this.height);
+
+	if (this.strokeStyle)
+	{
+	    this.ctx.strokeStyle = this.strokeStyle;		
+	    this.ctx.lineWidth = this.lineWidth;
+	    this.ctx.strokeRect(this.xLoc, this.yLoc, this.width, this.height);
+	}
+
+	if (this.textObj != undefined)
+	    this.textObj.drawObj();			
+
+	this.ctx.restore();
     }
 }
