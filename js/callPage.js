@@ -41,8 +41,16 @@ function startTimer(timeText)
 	    var today = new Date();
 	    var currentTime = today.getTime();
 	    callTime = Math.floor((currentTime - startTime) / 1000);
-
-	    callPage.getObj("callTime").text = callTime;		
+	
+		var hours = Math.floor(callTime / 3600);
+		callTime -= hours * 3600;
+		var mins = Math.floor(callTime / 60);
+		var secs = callTime - (mins * 60) < 10 ? "0" + (callTime - (mins * 60)).toString() : (callTime - (mins * 60)).toString();
+		
+		hours = hours > 10 ? hours : "0" + hours.toString();
+		mins = mins > 10 ? mins : "0" + mins.toString();
+		
+	    callPage.getObj("callTime").text = hours + ":" + mins + ":" + secs;		
 	    callPage.drawMenu();
 	    }, 1000);
 }
@@ -102,4 +110,8 @@ function initCallPage(initState)
 	switchMenu(mainPage);			
 	stopTimer();
     };
+}
+
+
+
 
