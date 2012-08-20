@@ -101,11 +101,11 @@ function initCallPage(initState)
     }		
 
     endCallButton.onClick = function(){			    
-	send({
-		"api_namespace" : "tizen.ivi.dialer",
-		"type": "method",
-		"command": "hangup"					
-		});	
+        try {
+            activeCall.end();
+        } catch (err) {
+            console.log("Attempting to hangup a non-active call");
+        }
 	currentState = "idle";
 	switchMenu(mainPage);			
 	stopTimer();
