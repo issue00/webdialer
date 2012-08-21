@@ -108,7 +108,7 @@ function init()
     var listener = {
 	"onAccountUpdated": function(account) {}, 
 	"onAccountAdded": function(account) { 
-            if (activeAccount == null) {
+            if (activeService == null) {
                 activeAccount = account;
                 activeService = tizen.call.getCallService(activeAccount.id);
             }
