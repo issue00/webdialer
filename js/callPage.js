@@ -98,7 +98,8 @@ function initButtons(initState)
 		    currentState = "activeCall";
 		   	startTimer();
 		    initButtons("activeCall");
-		    drawMenu(callPage);	
+                    callPage.drawMenu();
+                    activeCall.accept();
 		};
 
     }		
