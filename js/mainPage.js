@@ -79,14 +79,13 @@ function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
 
     button.onClick = function(){			    
 	var dialNumber = mainPage.getObj("textArea").textObj.text;
-	
-	send({
-		"api_namespace" : "tizen.ivi.dialer",
-		"type": "method",
-		"command": "dial_number",
-		"number": dialNumber
-		});								
-	
+
+        try {
+            activeService.makeCall(dialNumber);
+        } catch (err) {
+            console.log("Attempting to make call without an available modem");
+            return;
+        }
 	initCallPage("dialing");
 	updateNumber(dialNumber);
 	switchMenu(callPage);		

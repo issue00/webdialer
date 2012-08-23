@@ -60,15 +60,64 @@ function stopTimer()
     clearInterval(timerInterval);
 }
 
+function initButtons(initState)
+{
+	var incomingBar = callPage.getObj("incomingBar");
+	if (initState == "dialing" || initState == "activeCall")
+		var buttonWidth = screenWidth * 0.6;
+    else
+		var buttonWidth = (screenWidth * 0.8) / 2;
+	
+	var buttonHeight = screenHeight * 0.15;
+	
+	 var endCallButton;
+
+    if (initState == "dialing" || initState == "activeCall")
+    {
+		endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.2, 
+			"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );
+	
+		callPage.getObj("acceptCallButton").visible = false;												
+    }
+    else
+    {
+		acceptCallButton = callPage.addObject(buttonCtx, "button", {"name" : "acceptCallButton", "image": images.incomingAcceptButton, "icon": images.callIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.1, 
+			"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight, "visible" : true} );	
+	
+		endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, 
+			"xLoc" : acceptCallButton.xLoc + acceptCallButton.width + 20, "yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );													
+		
+		acceptCallButton.onClick = function(){
+		    try {
+		    	console.log("Accepting call")
+				activeCall.accept();
+		    } catch (err) {
+				console.log("Failed to accept call");
+		    }
+		    
+		    currentState = "activeCall";
+		   	startTimer();
+		    initButtons("activeCall");
+		    drawMenu(callPage);	
+		};
+
+    }		
+
+    endCallButton.onClick = function(){			    
+	try {
+	    activeCall.end();
+	} catch (err) {
+	    console.log("Attempting to hangup a non-active call");
+	}
+	currentState = "idle";
+	switchMenu(mainPage);			
+	stopTimer();
+    };
+
+}
+
 function initCallPage(initState)
 {	   
-    if (initState == "dialing" || initState == "inCall")
-	var buttonWidth = screenWidth * 0.6;
-    else
-	var buttonWidth = (screenWidth * 0.8) / 2;
-
-    var buttonHeight = screenHeight * 0.15;
-
 
     var incomingBar = callPage.addObject(mainCtx, "shape", {"name" : "incomingBar", "xLoc" : -20, "yLoc" : screenHeight * 0.2, "width" : screenWidth + 40, 
 	    "height" : screenHeight * 0.6, "fillStyle" : "#51504F", "strokeStyle" : "#B3BF3C", "lineWidth" : 5}); 
@@ -81,35 +130,9 @@ function initCallPage(initState)
 
     var callTime = callPage.addObject(mainCtx, "text", {"name" : "callTime", "xLoc" : clockIcon.xLoc + clockIcon.width + 10, "yLoc" : clockIcon.yLoc, "width" : screenWidth * 0.2, 
 	    "height" : 100, "text" : "00:00:00", "template" : callTimeTextTemplate});
-
-    var endCallButton;
-
-    if (initState == "dialing" || initState == "inCall")
-    {
-	endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.2, 
-		"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );
-
-	callPage.getObj("acceptCallButton").visible = false;												
-    }
-    else
-    {
-	acceptCallButton = callPage.addObject(buttonCtx, "button", {"name" : "acceptCallButton", "image": images.incomingAcceptButton, "icon": images.callIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.1, 
-		"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight, "visible" : true} );	
-
-	endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, 
-		"xLoc" : acceptCallButton.xLoc + acceptCallButton.width + 20, "yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );													
-    }		
-
-    endCallButton.onClick = function(){			    
-	send({
-		"api_namespace" : "tizen.ivi.dialer",
-		"type": "method",
-		"command": "hangup"					
-		});	
-	currentState = "idle";
-	switchMenu(mainPage);			
-	stopTimer();
-    };
+	
+	initButtons(initState);
+   
 }
 
 
