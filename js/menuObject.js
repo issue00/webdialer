@@ -102,20 +102,20 @@ MenuObject.prototype.addIconGrid = function(iconNames, iconImages, iconWidth, ic
 function addBackButton(menuObj, xLoc, yLoc, width, height)
 {
     var obj = {
-        "name" : "back", 
-        "image": images.home, 
-        "xLoc" : xLoc, 
-        "yLoc" : yLoc, 
-        "width" : width, 
-        "height" : height, 
-        "shadowOffsetX" : 0, 
-        "shadowOffsetY" : 0, 
-        "shadowBlur" : 12, 
-        "shadowColor" : "black", 
-        "onClick" : function() { 
-            switchMenu(mainMenu);
-            // TODO: Add call to trigger the homescreen to be raised
-        }
+	"name" : "back", 
+	"image": images.home, 
+	"xLoc" : xLoc, 
+	"yLoc" : yLoc, 
+	"width" : width, 
+	"height" : height, 
+	"shadowOffsetX" : 0, 
+	"shadowOffsetY" : 0, 
+	"shadowBlur" : 12, 
+	"shadowColor" : "black", 
+	"onClick" : function() { 
+	    switchMenu(mainMenu);
+	    // TODO: Add call to trigger the homescreen to be raised
+	}
     }
     menuObj.addObject(buttonCtx, obj);
 }

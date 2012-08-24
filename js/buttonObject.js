@@ -48,7 +48,7 @@ ButtonObject.prototype.update = function(args)
     if (args.width) {this.width = args.width;}
     if (args.height) {this.height = args.height;}
     if (args.ctx) {this.ctx = ctx;}
-    if (args.visible) {this.visible = args.visible;}
+    if (args.visible != undefined) {this.visible = args.visible;}
     if (args.onClick) {this.onClick = args.onClick;}	
     if (args.onHold) {this.onHold = args.onHold;}	
     if (args.onMove) {this.onMove = args.onMove;}	

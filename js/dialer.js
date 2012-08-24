@@ -8,7 +8,7 @@
  */
 
 var mainCanvas, bgCanvas, buttonCanvas;
-var mainCtx, bgCtx, buttonCtx;
+var mainCtx, bgCtx, buttonCtx, mouseCtx;
 var drawn = false;
 var screenHeight;
 var screenWidth;
@@ -16,6 +16,7 @@ var images = [];
 var objects = [];
 var mouseDrag = false, mouseDown = false;
 var prevXMouse, prevYMouse;
+var clicksDisabled = true;
 
 var mainPageTitleTemplate = {"font" : "bold 40pt Arial", "lineWidth" : 2.5, "fillStyle" : "black", "strokeStyle" : "white", "textAlign" : "center",  
     "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 32, "shadowColor" : "rgba(0, 0, 110, 1.0)"};	
@@ -35,17 +36,20 @@ var currentState = "idle";
 
 var activeCall = null;
 var activeService = null;
+var noModems = false;
 
 function onMouseDown(event) 
 {	
+    if (!clicksDisabled)
+    {
+	var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
 
-    var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
+	if (selectedObj && selectedObj.onClick)
+	    selectedObj.onClick(event);
 
-    if (selectedObj && selectedObj.onClick)
-	selectedObj.onClick(event);
-
-    prevXMouse = event.clientX;
-    prevYMouse = event.clientY;
+	prevXMouse = event.clientX;
+	prevYMouse = event.clientY;
+    }
 }
 
 function onMouseMove(event) 
@@ -108,66 +112,34 @@ function init()
     var listener = {
 	"onAccountUpdated": function(account) {}, 
 	"onAccountAdded": function(account) { 
-            if (activeService == null) {
-                activeAccount = account;
-                activeService = tizen.call.getCallService(activeAccount.id);
-            }
-            
-            // TODO: Remove banner warning of no available modems
-            console.log("Modem available for account: " + activeAccount.id);
+	    if (activeService == null) {
+		activeAccount = account;
+		activeService = tizen.call.getCallService(activeAccount.id);
+	    }
+
+	    noModems = false;
+	    initMainPage();
+	    switchMenu(mainPage);        	
+	    clicksDisabled = false;
+
+
+	    console.log("Modem available for account: " + activeAccount.id);
 	}, 
 	"onAccountRemoved": function(id) {
-            if (activeAccount && activeAccount.id == id) {
-                // grab any account available
-                activeAccount = tizen.account.findServices('')[0];
-                try {
-                    activeService = tizen.call.getCallService(activeAccount.id);
-                } catch (err) {
-                    // TODO: Add banner letting the user know that calls can not
-                    // be made since there are no active modems
-                    console.log("No available modems!");
-                }
-            }
+	    if (activeAccount && activeAccount.id == id) {
+		// grab any account available
+		activeAccount = tizen.account.findServices('')[0];
+		try {
+		    activeService = tizen.call.getCallService(activeAccount.id);
+		} catch (err) {
+		    noModems = true;
+		    initMainPage();
+		    switchMenu(mainPage);		        	    
+		    console.log("No available modems!");
+		}
+	    }
 	}
     }
-    tizen.account.addAccountListener(listener);
-
-    if (tizen.account.findServices('').length == 0) {
-        // TODO: Add banner letting the user know that calls can not
-        // be made since there are no active modems
-        console.log("No available modems!");
-    }
-
-    var handler = {
-        onIncoming: function(call) {
-        activeCall = call;
-	    currentState = "incomingCall";
-	    updateNumber(call.callData.LineIdentification);
-	    initCallPage("incomingCall");
-	    switchMenu(callPage);
-        },
-        onDialing: function(call) {
-            activeCall = call;
-        },
-        onAlerting: function(call) {
-            activeCall = call;
-        },
-        onDisconnected: function(call, disconnectReason) {
-            activeCall = null;
-        },
-        onDisconnecting: function(call) {
-        },
-        onAccepted: function(call) {
-            activeCall = call;
-        },
-        onActivated: function(call) {
-        },
-        onError: function(call){
-            console.log("onError: "); console.log(call);
-        }
-    };
-    tizen.call.addCallHandler(handler);
-
     mainCanvas = document.getElementById("mainCanvas");
     bgCanvas = document.getElementById("bgCanvas");
     buttonCanvas = document.getElementById("buttonCanvas");
@@ -176,9 +148,10 @@ function init()
     mainCtx = mainCanvas.getContext("2d");
     bgCtx = bgCanvas.getContext("2d");
     buttonCtx = buttonCanvas.getContext("2d");
+    mouseCtx = mouseClicksLayer.getContext("2d");
 
     var sources = {
-	   phoneIcon: "images/bluetooth-smartphone.png",
+phoneIcon: "images/bluetooth-smartphone.png",
 	   callButton: "images/ivi_btn-call.png",
 	   callButtonPressed: "images/ivi_btn-call-active.png",
 	   closeButton: "images/ivi_btn-close.png",
@@ -215,14 +188,62 @@ function init()
     mouseClicksLayer.addEventListener('mousedown', onMouseDown);
     mouseClicksLayer.addEventListener('mousemove', onMouseMove);
     mouseClicksLayer.addEventListener('mouseup', onMouseUp);
+
+    tizen.account.addAccountListener(listener);
+    
+    setTimeout(function(){
+	    	if (tizen.account.findServices('').length == 0) 
+	    	{
+	   	    noModems = true;
+	    	    initMainPage();
+	            switchMenu(mainPage);
+	    	    console.log("No available modems!");       
+	    	}
+	    },1000);
+
+    var handler = {
+onIncoming: function(call) {
+		activeCall = call;
+		currentState = "incomingCall";
+		updateNumber(call.callData.LineIdentification);
+		initCallPage("incomingCall");
+		switchMenu(callPage);
+	    },
+onDialing: function(call) {
+	       activeCall = call;
+	   },
+onAlerting: function(call) {
+		activeCall = call;
+	    },
+onDisconnected: function(call, disconnectReason) {
+		    activeCall = null;
+		    stopTimer();
+		    switchMenu(mainPage);
+		},
+onDisconnecting: function(call) {
+		     stopTimer();
+		     switchMenu(mainPage);
+		 },
+onAccepted: function(call) {
+		startTimer();
+		activeCall = call;
+	    },
+onActivated: function(call) {
+		 startTimer();
+	     },
+onError: function(call){
+	     console.log("onError: "); console.log(call);
+	 }
+    };
+    tizen.call.addCallHandler(handler);
 }
 
 function switchMenu(nextMenu)
 {   
-    currentPage.visible = false;
+    currentPage.visible = false;		
     currentPage = nextMenu; 
     currentPage.visible = true;
-    currentPage.drawMenu();
+    currentPage.drawMenu();	
 }
 
 function initPages()

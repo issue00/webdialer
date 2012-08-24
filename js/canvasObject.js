@@ -20,13 +20,16 @@ function objectsAtLocation(pageObj, xLoc, yLoc)
 	{
 	    currItem = pageObj.canvasObjs[i];
 
-	    if (xLoc > currItem.xLoc && xLoc < (currItem.xLoc + currItem.width))
+	    if (currItem.visible)
 	    {
-		if (yLoc > currItem.yLoc && yLoc < (currItem.yLoc + currItem.height))
-		{	    	    
-		    if (prevItem == undefined || (currItem.ctx.canvas.style.zIndex > prevItem.ctx.canvas.style.zIndex) || 
-			    ((currItem.ctx.canvas.style.zIndex === prevItem.ctx.canvas.style.zIndex) && (currItem.zLoc > prevItem.zLoc)))
-			prevItem = currItem;
+		if (xLoc > currItem.xLoc && xLoc < (currItem.xLoc + currItem.width))
+		{
+		    if (yLoc > currItem.yLoc && yLoc < (currItem.yLoc + currItem.height))
+		    {	    	    
+			if (prevItem == undefined || (Number(currItem.ctx.canvas.style.zIndex) > Number(prevItem.ctx.canvas.style.zIndex)) || 
+				((Number(currItem.ctx.canvas.style.zIndex) === Number(prevItem.ctx.canvas.style.zIndex)) && (currItem.zLoc > prevItem.zLoc)))
+			    prevItem = currItem;
+		    }
 		}
 	    }
 	}
@@ -41,6 +44,7 @@ function clearCanvas()
 {
     buttonCtx.clearRect(0,0, screenWidth, screenHeight);
     mainCtx.clearRect(0,0, screenWidth, screenHeight);   
+    mouseCtx.clearRect(0,0, screenWidth, screenHeight);
 }
 
 function drawRoundedRectangle(ctx, xLoc, yLoc, width, height, cornerRadius, strokeStyle, fillStyle, lineWidth)

@@ -32,24 +32,27 @@ function updateNumber(number)
     callPage.getObj("displayedNumber").text = number;		
 }
 
-function startTimer(timeText)
+function startTimer()
 {
     var today = new Date();
     startTime = today.getTime();
+
+    if (timerInterval)
+	clearInterval(timerInterval);
 
     timerInterval = setInterval( function() {
 	    var today = new Date();
 	    var currentTime = today.getTime();
 	    callTime = Math.floor((currentTime - startTime) / 1000);
-	
-		var hours = Math.floor(callTime / 3600);
-		callTime -= hours * 3600;
-		var mins = Math.floor(callTime / 60);
-		var secs = callTime - (mins * 60) < 10 ? "0" + (callTime - (mins * 60)).toString() : (callTime - (mins * 60)).toString();
-		
-		hours = hours > 10 ? hours : "0" + hours.toString();
-		mins = mins > 10 ? mins : "0" + mins.toString();
-		
+
+	    var hours = Math.floor(callTime / 3600);
+	    callTime -= hours * 3600;
+	    var mins = Math.floor(callTime / 60);
+	    var secs = callTime - (mins * 60) < 10 ? "0" + (callTime - (mins * 60)).toString() : (callTime - (mins * 60)).toString();
+
+	    hours = hours > 10 ? hours : "0" + hours.toString();
+	    mins = mins > 10 ? mins : "0" + mins.toString();
+
 	    callPage.getObj("callTime").text = hours + ":" + mins + ":" + secs;		
 	    callPage.drawMenu();
 	    }, 1000);
@@ -58,49 +61,51 @@ function startTimer(timeText)
 function stopTimer()
 {
     clearInterval(timerInterval);
+    timerInterval = undefined;
+    startTime = 0;
+    callTime = 0;
 }
 
 function initButtons(initState)
 {
-	var incomingBar = callPage.getObj("incomingBar");
-	if (initState == "dialing" || initState == "activeCall")
-		var buttonWidth = screenWidth * 0.6;
+    var incomingBar = callPage.getObj("incomingBar");
+    if (initState == "dialing" || initState == "activeCall")
+	var buttonWidth = screenWidth * 0.6;
     else
-		var buttonWidth = (screenWidth * 0.8) / 2;
-	
-	var buttonHeight = screenHeight * 0.15;
-	
-	 var endCallButton;
+	var buttonWidth = (screenWidth * 0.8) / 2;
+
+    var buttonHeight = screenHeight * 0.15;
+
+    var endCallButton;
 
     if (initState == "dialing" || initState == "activeCall")
     {
-		endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.2, 
-			"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );
-	
-		callPage.getObj("acceptCallButton").visible = false;												
+	endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.2, 
+		"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );
+
+	callPage.getObj("acceptCallButton").visible = false;												
     }
     else
     {
-		acceptCallButton = callPage.addObject(buttonCtx, "button", {"name" : "acceptCallButton", "image": images.incomingAcceptButton, "icon": images.callIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.1, 
-			"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight, "visible" : true} );	
-	
-		endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, 
-			"xLoc" : acceptCallButton.xLoc + acceptCallButton.width + 20, "yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );													
-		
-		acceptCallButton.onClick = function(){
-		    try {
-		    	console.log("Accepting call")
-				activeCall.accept();
-		    } catch (err) {
-				console.log("Failed to accept call");
-		    }
-		    
-		    currentState = "activeCall";
-		   	startTimer();
-		    initButtons("activeCall");
-                    callPage.drawMenu();
-                    activeCall.accept();
-		};
+	acceptCallButton = callPage.addObject(buttonCtx, "button", {"name" : "acceptCallButton", "image": images.incomingAcceptButton, "icon": images.callIcon, "iconWidth" : 100, "iconHeight" : 100, "xLoc" : screenWidth * 0.1, 
+		"yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight, "visible" : true} );	
+
+	endCallButton = callPage.addObject(buttonCtx, "button", {"name" : "endCallButton", "image": images.incomingDeclineButton, "icon": images.endCallIcon, "iconWidth" : 100, "iconHeight" : 100, 
+		"xLoc" : acceptCallButton.xLoc + acceptCallButton.width + 20, "yLoc" : incomingBar.yLoc + incomingBar.height - buttonHeight - 50, "width" : buttonWidth, "height" : buttonHeight} );													
+
+	acceptCallButton.onClick = function(){
+	    try {
+		console.log("Accepting call")
+		    activeCall.accept();
+	    } catch (err) {
+		console.log("Failed to accept call");
+	    }
+
+	    currentState = "activeCall";		   	
+	    initButtons("activeCall");
+	    callPage.drawMenu();
+	    activeCall.accept();
+	};
 
     }		
 
@@ -131,11 +136,8 @@ function initCallPage(initState)
 
     var callTime = callPage.addObject(mainCtx, "text", {"name" : "callTime", "xLoc" : clockIcon.xLoc + clockIcon.width + 10, "yLoc" : clockIcon.yLoc, "width" : screenWidth * 0.2, 
 	    "height" : 100, "text" : "00:00:00", "template" : callTimeTextTemplate});
-	
-	initButtons(initState);
-   
+
+    initButtons(initState);
+
 }
-
-
-
 

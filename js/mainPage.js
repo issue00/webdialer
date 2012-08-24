@@ -10,9 +10,11 @@
 var phoneNumberTextTemplate = {"font" : "bold 40pt Arial", "lineWidth" : 2.5, "fillStyle" : "black", "strokeStyle" : "white", "textAlign" : "center",  "textBaseline" : "middle",
     "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 32, "shadowColor" : "rgba(0,100,150, 0.6)"};	
 
-
 var sideTextTemplate = {"font" : "bold 40pt Arial", "lineWidth" : 2.5, "fillStyle" : "grey", "strokeStyle" : "white", "textAlign" : "center",  "textBaseline" : "middle",
-    "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 52, "shadowColor" : "rgba(0, 0, 110, 1.0)"};	
+    "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 52, "shadowColor" : "rgba(0, 0, 110, 1.0)", "wordWrap" : true};	
+
+var errorTextTemplate = {"font" : "bold 50px Arial", "lineWidth" : 2.5, "fillStyle" : "red", "strokeStyle" : "rgba(150, 0, 0, 1.0)", "textAlign" : "center",  "textBaseline" : "middle",
+    "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 52, "shadowColor" : "rgba(0, 0, 0, 1.0)", "wordWrap" : true};	
 
 function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
 {		
@@ -80,17 +82,16 @@ function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
     button.onClick = function(){			    
 	var dialNumber = mainPage.getObj("textArea").textObj.text;
 
-        try {
-            activeService.makeCall(dialNumber);
-        } catch (err) {
-            console.log("Attempting to make call without an available modem");
-            return;
-        }
+	try {
+	    activeService.makeCall(dialNumber);
+	} catch (err) {
+	    console.log("Attempting to make call without an available modem");
+	    return;
+	}
 	initCallPage("dialing");
 	updateNumber(dialNumber);
 	switchMenu(callPage);		
-	currentState = "dialing";	    
-	startTimer(callTime);
+	currentState = "dialing";	
     };		
 }
 
@@ -99,6 +100,7 @@ function initMainPage()
     var textAreaHeight = screenHeight / 4;
     var buttonPadWidth = screenWidth * 0.75;
     var buttonPadHeight = screenHeight - textAreaHeight - 60;
+    errorTextTemplate.font = "bold " + ((screenHeight * 0.6) / 6) + "px Arial";
 
     addButtonGrid(20, textAreaHeight + 40, buttonPadWidth, buttonPadHeight);   
     mainPage.addObject(mainCtx, "image", {"name" : "textArea", "image": images.textArea, "text" : "", "textTemplate" : phoneNumberTextTemplate, "xLoc" : 20, "yLoc" : 20, "width" : buttonPadWidth, "height" : textAreaHeight} );	 
@@ -106,7 +108,14 @@ function initMainPage()
     mainPage.addObject(mainCtx, "image", {"name" : "buttonBG","image": images.buttonBG, "xLoc" : 20, "yLoc" : textAreaHeight + 40, "width" : buttonPadWidth, "height" : buttonPadHeight} );	
 
     var myobj = mainPage.addObject(mainCtx, "shape", {"name" : "optionsBG", "xLoc" : 40 + buttonPadWidth, "yLoc" : 0, "width" : (screenWidth * 0.25) - 60, "height" : screenHeight, 
-	    "fillStyle" : "#51504F", "strokeStyle" : "#373736", "lineWidth" : 5})    
+	    "fillStyle" : "#51504F", "strokeStyle" : "#373736", "lineWidth" : 5});    
 
+    /************************************** Lock Screen Objects *************************************/
+
+    var fog = mainPage.addObject(mouseCtx, "shape", {"name" : "fog", "xLoc" : 0, "yLoc" : 0, "zLoc" : 3, "width" : screenWidth, 
+	    "height" : screenHeight, "fillStyle" : "rgba(100,100,100,0.7)", "visible" : noModems}); 
+
+    var textBox = mainPage.addObject(mouseCtx, "shape", {"name" : "textBox", "rounded" : true, "xLoc" : screenWidth * 0.1, "yLoc" : screenHeight * 0.2, "zLoc" : 4, "width" : screenWidth * 0.8, 
+	    "height" : screenHeight * 0.6, "fillStyle" : "white", "strokeStyle" : "#85322A", "lineWidth" : 35, "visible" : noModems, "text" : "No modems available!", "textTemplate" : errorTextTemplate});    
 
 }

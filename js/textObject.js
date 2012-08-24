@@ -39,7 +39,7 @@ TextObject = function(ctx, args)
     this.shadowColor = args.shadowColor;
 
     if (args.template)
-		this.applyTemplate(args.template);
+	this.applyTemplate(args.template);
 }
 
 TextObject.prototype.update = function(args)
@@ -57,7 +57,7 @@ TextObject.prototype.update = function(args)
     if (args.drawVertical) {this.drawVertical = args.drawVertical;}
     if (args.largeShadow) {this.largeShadow = args.largeShadow;}
     if (args.ctx) {this.ctx = ctx;}
-    if (args.visible) {this.visible = args.visible;}
+    if (args.visible != undefined) {this.visible = args.visible;}
     if (args.onClick) {this.onClick = args.onClick;}		
 
     /* Text styles */
@@ -80,49 +80,49 @@ TextObject.prototype.drawObj = function()
 {
     if (this.visible)
     {		
-		this.ctx.save();
-	
-		this.ctx.font = this.font;
-		this.ctx.fillStyle = this.fillStyle;
-		this.ctx.lineWidth = this.lineWidth ;
-		this.ctx.strokeStyle = this.strokeStyle;
-		this.ctx.textAlign = this.textAlign;
-		this.ctx.textBaseline = this.textBaseline;
-		this.ctx.shadowOffsetX = this.shadowOffsetX;   
-		this.ctx.shadowOffsetY = this.shadowOffsetY;   
-		this.ctx.shadowBlur = this.shadowBlur;   
-		this.ctx.shadowColor = this.shadowColor;   
-			
-		if (this.drawVertical)
-		{
-			var nextChar;
-			var tmpStr = this.text;
-			var vertYLoc = this.yLoc;
-			for (var i = 0; i < this.text.length; i++)
-			{
-				nextChar = tmpStr.charAt(0);
-				if (this.fillStyle)
-					this.ctx.fillText(nextChar, this.xLoc, vertYLoc);  	
-	
-		   		if (this.strokeStyle)
-					this.ctx.strokeText(nextChar, this.xLoc, vertYLoc);
-				
-				vertYLoc += 110;	
-				tmpStr = tmpStr.slice(1);							
-			}
-		}
-		else if (this.wordWrap)
-		    this.wrapText();
-		else
-		{
-		    if (this.fillStyle)
-				this.ctx.fillText(this.text, this.xLoc, this.yLoc);  	
-	
-		    if (this.strokeStyle)
-				this.ctx.strokeText(this.text, this.xLoc, this.yLoc);	
-		}	
-		
-		this.ctx.restore();
+	this.ctx.save();
+
+	this.ctx.font = this.font;
+	this.ctx.fillStyle = this.fillStyle;
+	this.ctx.lineWidth = this.lineWidth ;
+	this.ctx.strokeStyle = this.strokeStyle;
+	this.ctx.textAlign = this.textAlign;
+	this.ctx.textBaseline = this.textBaseline;
+	this.ctx.shadowOffsetX = this.shadowOffsetX;   
+	this.ctx.shadowOffsetY = this.shadowOffsetY;   
+	this.ctx.shadowBlur = this.shadowBlur;   
+	this.ctx.shadowColor = this.shadowColor;   
+
+	if (this.drawVertical)
+	{
+	    var nextChar;
+	    var tmpStr = this.text;
+	    var vertYLoc = this.yLoc;
+	    for (var i = 0; i < this.text.length; i++)
+	    {
+		nextChar = tmpStr.charAt(0);
+		if (this.fillStyle)
+		    this.ctx.fillText(nextChar, this.xLoc, vertYLoc);  	
+
+		if (this.strokeStyle)
+		    this.ctx.strokeText(nextChar, this.xLoc, vertYLoc);
+
+		vertYLoc += 110;	
+		tmpStr = tmpStr.slice(1);							
+	    }
+	}
+	else if (this.wordWrap)
+	    this.wrapText();
+	else
+	{
+	    if (this.fillStyle)
+		this.ctx.fillText(this.text, this.xLoc, this.yLoc);  	
+
+	    if (this.strokeStyle)
+		this.ctx.strokeText(this.text, this.xLoc, this.yLoc);	
+	}	
+
+	this.ctx.restore();
     }
 }
 
@@ -178,30 +178,47 @@ TextObject.prototype.wrapText = function()
 
     for(var i = 0; i < words.length; i++) 
     {
-		var testLine = line + words[i] + " ";
-		var metrics = this.ctx.measureText(testLine);
-		var testWidth = metrics.width;
-		if(testWidth > this.width) 
-		{
-		    if (this.fillStyle)
-			this.ctx.fillText(line, this.xLoc, tmpYloc);  	
-	
-		    if (this.strokeStyle)
-			this.ctx.strokeText(line, this.xLoc, tmpYloc);	
-	
-		    line = words[i] + " ";
-		    tmpYloc += this.lineHeight;
-		    this.height += this.lineHeight;  
-		}
-		else 
-		{
-		    line = testLine;
-		}
-    }
-    
-    if (this.fillStyle)
+	var testLine = line + words[i] + " ";
+	var metrics = this.ctx.measureText(testLine);
+	var testWidth = metrics.width;
+	if(testWidth > this.width) 
+	{
+	    if (this.fillStyle)
 		this.ctx.fillText(line, this.xLoc, tmpYloc);  	
 
-    if (this.strokeStyle)
+	    if (this.strokeStyle)
 		this.ctx.strokeText(line, this.xLoc, tmpYloc);	
+
+	    var pxLoc = this.font.search("px");
+	    var fsStart = pxLoc;
+	    var fontSize = 0;
+
+	    while (pxLoc > 0 && this.font[fsStart] !== ' ')
+		fsStart--;
+
+	    if (fsStart !== 0)
+		fsStart++;
+
+	    while (fsStart != pxLoc)
+	    {
+		fontSize += this.font[fsStart];
+		fsStart++;
+	    }
+
+	    fontSize = Number(fontSize);
+	    line = words[i] + " ";
+	    tmpYloc += fontSize;
+	    this.height += fontSize;
+	}
+	else 
+	{
+	    line = testLine;
+	}
+    }
+
+    if (this.fillStyle)
+	this.ctx.fillText(line, this.xLoc, tmpYloc);  	
+
+    if (this.strokeStyle)
+	this.ctx.strokeText(line, this.xLoc, tmpYloc);	
 }

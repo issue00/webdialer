@@ -12,6 +12,7 @@ ShapeObject = function(ctx, args)
     /* General */
     this.name = args.name;
     this.type = "shape";
+    this.rounded = args.rounded;
     this.img = args.image;
     this.xLoc = args.xLoc;
     this.yLoc = args.yLoc;
@@ -22,7 +23,7 @@ ShapeObject = function(ctx, args)
     this.lineWidth = args.lineWidth;
     this.fillStyle = args.fillStyle;
     this.ctx = ctx;
-    this.textObj = args.text != undefined ? new TextObject(this.ctx,{"text" : args.text, "xLoc" : (this.xLoc + (this.width / 2)), "yLoc" : (this.yLoc + (this.height / 2)), "zLoc" : (this.zLoc + 1), "template" : args.textTemplate}) : undefined;
+    this.textObj = args.text != undefined ? new TextObject(this.ctx,{"text" : args.text, "xLoc" : (this.xLoc + (this.width / 2)), "yLoc" : (this.yLoc + (this.height / 2)), "zLoc" : (this.zLoc + 1), "width" : args.width, "height" : args.height, "template" : args.textTemplate}) : undefined;
     this.visible = args.visible == undefined ? true : args.visible;
     this.onClick = undefined;		
 
@@ -43,8 +44,8 @@ ShapeObject.prototype.update = function(args)
     if (args.width) {this.width = args.width;}
     if (args.height) {this.height = args.height;}
     if (args.ctx) {this.ctx = ctx;}
-    if (args.text) {this.textObj.update({"text" : args.text, "xLoc" : (args.xLoc + (args.width / 2)), "yLoc" : (args.yLoc + (args.height / 2)), "zLoc" : (args.zLoc + 1), "template" : args.textTemplate})}
-    if (args.visible) {this.visible = args.visible;}
+    if (args.text) {this.textObj.update({"text" : args.text, "xLoc" : (args.xLoc + (args.width / 2)), "yLoc" : (args.yLoc + (args.height / 2)), "zLoc" : (args.zLoc + 1), "width" : args.width, "height" : args.height, "template" : args.textTemplate})}
+    if (args.visible != undefined) {this.visible = args.visible;}
     if (args.onClick) {this.onClick = args.onClick;}	
 
     /* Img shadow styles */
@@ -60,18 +61,31 @@ ShapeObject.prototype.drawObj = function()
     {		
 	this.ctx.save();
 
-	this.ctx.fillStyle = this.fillStyle;
-	this.ctx.fillRect(this.xLoc, this.yLoc, this.width, this.height);
-
-	if (this.strokeStyle)
+	if (!this.rounded)
 	{
-	    this.ctx.strokeStyle = this.strokeStyle;		
-	    this.ctx.lineWidth = this.lineWidth;
-	    this.ctx.strokeRect(this.xLoc, this.yLoc, this.width, this.height);
+	    this.ctx.fillStyle = this.fillStyle; 
+	    this.ctx.fillRect(this.xLoc, this.yLoc, this.width, this.height);
+
+	    if (this.strokeStyle)
+	    {
+		this.ctx.strokeStyle = this.strokeStyle;		
+		this.ctx.lineWidth = this.lineWidth;
+		this.ctx.strokeRect(this.xLoc, this.yLoc, this.width, this.height);
+	    }
+
+	}
+	else
+	{
+	    drawRoundedRectangle(this.ctx, this.xLoc, this.yLoc, this.width, this.height, 30, this.strokeStyle, this.fillStyle, this.lineWidth)
 	}
 
 	if (this.textObj != undefined)
-	    this.textObj.drawObj();			
+	{
+	    if (this.textObj.largeShadow)
+		this.textObj.drawLargeShadow();
+	    else
+		this.textObj.drawObj();
+	}			
 
 	this.ctx.restore();
     }
