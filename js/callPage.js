@@ -16,9 +16,13 @@ var incomingTextTemplate = {"font" : "bold 80pt Arial", "fillStyle" : "white", "
 var callTimeTextTemplate = {"font" : "bold 30pt Arial", "fillStyle" : "white", "textAlign" : "left",  "textBaseline" : "top",
     "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 0, "shadowColor" : "rgba(0, 0, 0, 1.0)"};	
 
+var callTimeTextTemplate = {"font" : "bold 40px Arial", "fillStyle" : "white", "textAlign" : "left",  "textBaseline" : "top",
+    "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 0, "shadowColor" : "rgba(0, 0, 0, 1.0)"};
+
 var startTime = 0;
 var callTime = 0;
 var timerInterval;
+var stateText = " ";
 
 function updateNumber(number)
 {
@@ -30,6 +34,36 @@ function updateNumber(number)
     }
 
     callPage.getObj("displayedNumber").text = number;		
+}
+
+function updateCallStateText(newState)
+{
+    stateText = newState;
+    var callStateTextObj = callPage.getObj("callStateText")
+	callStateTextObj.text = newState;
+
+    switch(newState)
+    {
+	case "Dialing..." :
+	    callStateTextObj.fillStyle = "white";
+	    callStateTextObj.strokeStyle = "grey";
+	    callStateTextObj.shadowColor = "rgba(0,0,0,1.0)";
+	    break;
+	case "Incoming Call..." :
+	    callStateTextObj.fillStyle = "red";
+	    callStateTextObj.strokeStyle = "#B30000";
+	    callStateTextObj.lineWidth = 1;
+	    callStateTextObj.shadowColor = "rgba(200,0,0,0.7)";
+	    break;
+	case "Active" :
+	    callStateTextObj.fillStyle = "#3CBF48";
+	    callStateTextObj.strokeStyle = "green";
+	    callStateTextObj.lineWidth = 1;
+	    callStateTextObj.shadowColor = "rgba(0,200,0,0.7)";
+	    break;		
+    }
+
+    callStateTextObj.shadowBlur = 30;	
 }
 
 function startTimer()
@@ -69,6 +103,7 @@ function stopTimer()
 function initButtons(initState)
 {
     var incomingBar = callPage.getObj("incomingBar");
+
     if (initState == "dialing" || initState == "activeCall")
 	var buttonWidth = screenWidth * 0.6;
     else
@@ -134,10 +169,15 @@ function initCallPage(initState)
     var clockIcon = callPage.addObject(mainCtx, "image", {"name" : "clock", "image": images.clockIcon, "xLoc" : screenWidth * 0.7, 
 	    "yLoc" : incomingBar.yLoc + 30, "width" : 50, "height" : 50} );
 
+    var callStateText = callPage.addObject(mainCtx, "text", {"name" : "callStateText", "xLoc" : 15, "yLoc" : clockIcon.yLoc, "width" : screenWidth * 0.2, 
+	    "height" : 100, "text" : stateText, "template" : callTimeTextTemplate});
+
     var callTime = callPage.addObject(mainCtx, "text", {"name" : "callTime", "xLoc" : clockIcon.xLoc + clockIcon.width + 10, "yLoc" : clockIcon.yLoc, "width" : screenWidth * 0.2, 
 	    "height" : 100, "text" : "00:00:00", "template" : callTimeTextTemplate});
 
-    initButtons(initState);
-
+    initButtons(initState);   
 }
+
+
+
 

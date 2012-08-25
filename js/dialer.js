@@ -190,23 +190,23 @@ phoneIcon: "images/bluetooth-smartphone.png",
     mouseClicksLayer.addEventListener('mouseup', onMouseUp);
 
     tizen.account.addAccountListener(listener);
-    
     setTimeout(function(){
-	    	if (tizen.account.findServices('').length == 0) 
-	    	{
-	   	    noModems = true;
-	    	    initMainPage();
-	            switchMenu(mainPage);
-	    	    console.log("No available modems!");       
-	    	}
+	    if (tizen.account.findServices('').length == 0) 
+	    {
+	    noModems = true;
+	    initMainPage();
+	    switchMenu(mainPage);
+	    console.log("No available modems!");       
+	    }
 	    },1000);
 
     var handler = {
 onIncoming: function(call) {
 		activeCall = call;
-		currentState = "incomingCall";
+		currentState = "incomingCall";		
+		initCallPage(currentState);    
 		updateNumber(call.callData.LineIdentification);
-		initCallPage("incomingCall");
+		updateCallStateText("Incoming Call...");
 		switchMenu(callPage);
 	    },
 onDialing: function(call) {
@@ -226,9 +226,11 @@ onDisconnecting: function(call) {
 		 },
 onAccepted: function(call) {
 		startTimer();
+		updateCallStateText("Active");
 		activeCall = call;
 	    },
 onActivated: function(call) {
+		 updateCallStateText("Active");
 		 startTimer();
 	     },
 onError: function(call){
@@ -250,6 +252,7 @@ function initPages()
 {
     initMainPage();
     initCallPage(currentState);
+    // initDisabledPage();
 
     bgCtx.drawImage(images.bgImage, 0, 0, screenWidth, screenHeight);
     currentPage.drawMenu();
