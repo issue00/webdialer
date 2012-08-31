@@ -46,17 +46,17 @@ function updateCallStateText(newState)
     {
 	case "Dialing..." :
 	    callStateTextObj.fillStyle = "white";
-	    callStateTextObj.strokeStyle = "grey";
-	    callStateTextObj.shadowColor = "rgba(0,0,0,1.0)";
+	    callStateTextObj.strokeStyle = "#00ADFF";
+	    callStateTextObj.shadowColor = "#00ADFF"; 
 	    break;
 	case "Incoming Call..." :
-	    callStateTextObj.fillStyle = "red";
-	    callStateTextObj.strokeStyle = "#B30000";
+	    callStateTextObj.fillStyle = "white";
+	    callStateTextObj.strokeStyle = "#FF8C00";
 	    callStateTextObj.lineWidth = 1;
-	    callStateTextObj.shadowColor = "rgba(200,0,0,0.7)";
+	    callStateTextObj.shadowColor = "#FF8C00";
 	    break;
 	case "Active" :
-	    callStateTextObj.fillStyle = "#3CBF48";
+	    callStateTextObj.fillStyle = "white";
 	    callStateTextObj.strokeStyle = "green";
 	    callStateTextObj.lineWidth = 1;
 	    callStateTextObj.shadowColor = "rgba(0,200,0,0.7)";

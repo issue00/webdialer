@@ -16,6 +16,20 @@ var sideTextTemplate = {"font" : "bold 40pt Arial", "lineWidth" : 2.5, "fillStyl
 var errorTextTemplate = {"font" : "bold 50px Arial", "lineWidth" : 2.5, "fillStyle" : "red", "strokeStyle" : "rgba(150, 0, 0, 1.0)", "textAlign" : "center",  "textBaseline" : "middle",
     "shadowOffsetX" : 0, "shadowOffsetY" : 0, "shadowBlur" : 52, "shadowColor" : "rgba(0, 0, 0, 1.0)", "wordWrap" : true};	
 
+var dialNumber = "";
+
+function addDashes()
+{   
+    if (dialNumber.length === 10)
+    {
+	var number = mainPage.getObj("textArea").textObj.text
+	    number = number.slice(0,3) + '-' + number.slice(3,6) + '-' + number.slice(6,10);
+	mainPage.getObj("textArea").textObj.text = number;
+    }   
+    else
+	mainPage.getObj("textArea").textObj.text = dialNumber;		
+}
+
 function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
 {		
     var spacer = 5;
@@ -52,8 +66,16 @@ function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
 		"yLoc" : iconYPosition, "width" : iconWidth, "height" : iconHeight} );		
 
 	button.onClick = function(){			    
-	    mainPage.getObj("textArea").textObj.text += this.name;
+	    this.img = images.numberButtonActive;
+	    dialNumber += this.name;
+	    mainPage.getObj("textArea").textObj.text += this.name;	    
+	    addDashes();	  
 	    mainPage.drawMenu();				
+	};
+
+	button.onRelease = function() {
+	    this.img = images.numberButton;
+	    mainPage.drawMenu();
 	};
 
 	iconXPosition += (iconWidth + spacer);
@@ -71,17 +93,27 @@ function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
     button = mainPage.addObject(buttonCtx, "button", {"name" : "del", "image": images.deleteButton, "icon": images.deleteIcon, "iconWidth" : iconHeight * 0.9, "iconHeight" : iconHeight * 0.9, 
 	    "xLoc" : iconXPosition, "yLoc" : iconYPosition, "width" : iconWidth, "height" : iconHeight} );
     iconXPosition += (iconWidth + spacer);
-    button.onClick = function(){			    
+    button.onClick = function(){	
+	this.img = images.deleteButtonActive;
+	this.holdTimeOut = setTimeout(function() {dialNumber = ""; mainPage.getObj("textArea").textObj.text = ""; mainPage.drawMenu();}, 600);
+	dialNumber = dialNumber.slice(0,-1);  
 	mainPage.getObj("textArea").textObj.text = mainPage.getObj("textArea").textObj.text.slice(0,-1);
+	addDashes();		  	    	
 	mainPage.drawMenu();
-    };			    	
+    };
+
+    button.onRelease = function() {
+	clearTimeout(this.holdTimeOut);
+	this.img = images.deleteButton;
+	mainPage.drawMenu();
+    };
+
     buttonNum = 14;    	
     button = mainPage.addObject(buttonCtx, "button", {"name" : "call", "image": images.callButton, "icon": images.callIcon, "iconWidth" : iconHeight * 0.9, "iconHeight" : iconHeight * 0.9, 
 	    "xLoc" : iconXPosition, "yLoc" : iconYPosition, "width" : iconWidth * 2 + spacer, "height" : iconHeight} );
 
     button.onClick = function(){			    
-	var dialNumber = mainPage.getObj("textArea").textObj.text;
-
+	this.img = images.callButtonActive;
 	try {
 	    activeService.makeCall(dialNumber);
 	} catch (err) {
@@ -90,8 +122,14 @@ function addButtonGrid (gridX, gridY, gridWidth, gridHeight)
 	}
 	initCallPage("dialing");
 	updateNumber(dialNumber);
+	updateCallStateText("Dialing...");
 	switchMenu(callPage);		
 	currentState = "dialing";	
+    };
+
+    button.onRelease = function() {
+	this.img = images.callButton;
+	mainPage.drawMenu();
     };		
 }
 
@@ -109,6 +147,9 @@ function initMainPage()
 
     var myobj = mainPage.addObject(mainCtx, "shape", {"name" : "optionsBG", "xLoc" : 40 + buttonPadWidth, "yLoc" : 0, "width" : (screenWidth * 0.25) - 60, "height" : screenHeight, 
 	    "fillStyle" : "#51504F", "strokeStyle" : "#373736", "lineWidth" : 5});    
+
+    var myobj = mainPage.addObject(mainCtx, "shape", {"name" : "optionsBG", "xLoc" : 40 + buttonPadWidth, "yLoc" : 0, "width" : (screenWidth * 0.25) - 60, "height" : screenHeight, 
+	    "fillStyle" : "#51504F", "strokeStyle" : "#373736", "lineWidth" : 5});
 
     /************************************** Lock Screen Objects *************************************/
 

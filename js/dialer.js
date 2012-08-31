@@ -37,12 +37,13 @@ var currentState = "idle";
 var activeCall = null;
 var activeService = null;
 var noModems = false;
+var selectedObj;
 
 function onMouseDown(event) 
 {	
     if (!clicksDisabled)
     {
-	var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
+	selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
 
 	if (selectedObj && selectedObj.onClick)
 	    selectedObj.onClick(event);
@@ -52,19 +53,10 @@ function onMouseDown(event)
     }
 }
 
-function onMouseMove(event) 
-{
-    var selectedObj = objectsAtLocation(currentPage, event.clientX, event.clientY);		
-    if (selectedObj && selectedObj.onMove)
-	selectedObj.onMove(event);
-
-    prevXMouse = event.clientX;
-    prevYMouse = event.clientY; 	
-}
-
 function onMouseUp(event) 
 {	
-
+    if (selectedObj && selectedObj.onRelease)
+	selectedObj.onRelease(event);
 }
 
 function resizeCanvas() 
@@ -153,7 +145,7 @@ function init()
     var sources = {
 phoneIcon: "images/bluetooth-smartphone.png",
 	   callButton: "images/ivi_btn-call.png",
-	   callButtonPressed: "images/ivi_btn-call-active.png",
+	   callButtonActive: "images/ivi_btn-call-active.png",
 	   closeButton: "images/ivi_btn-close.png",
 	   deleteButton: "images/ivi_btn-delete.png",
 	   deleteButtonActive: "images/ivi_btn-delete-active.png",
@@ -185,8 +177,7 @@ phoneIcon: "images/bluetooth-smartphone.png",
 
     $(window).bind('resize', resizeCanvas);
 
-    mouseClicksLayer.addEventListener('mousedown', onMouseDown);
-    mouseClicksLayer.addEventListener('mousemove', onMouseMove);
+    mouseClicksLayer.addEventListener('mousedown', onMouseDown);   
     mouseClicksLayer.addEventListener('mouseup', onMouseUp);
 
     tizen.account.addAccountListener(listener);
