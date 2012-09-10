@@ -1,1 +1,14 @@
+* Mon Sep 10 2012 bjones <None> submit/trunk/20120910.225107@acb3aeb
+- Moving makefile
+- update
+- Setting up for gbs
+- Buttons will now flash when clicked, indicator now specifies the call state on the call page, pressing and holding the del key will clear the entire number, and a few other graphical tweaks.
+- Adding indicator for call state on the current call page.
+- Added a popup for when a modem is not available. While the popup is visible it disables the dialer. Call page now disappears once the call is ended. Minor fixes to timer.
+- Fixing bug in the callback for an incoming call
+- Dialer now shows incoming calls
+- Adding closing bracket back in
+- Formatting text
+- Initial commit of the webapp used for hands free dialing
+
   
