@@ -1,11 +1,11 @@
-Name:       WebDialer
+Name:       webdialer
 Summary:    A HTML5 hands free dialer app
 Version:    0.0.1
 Release:    1
 Group:      Applications/System
 License:    Apache 2.0
 URL:        http://www.tizen.org2
-Source0:    %{name}-%{version}.tar.bz
+Source0:    %{name}-%{version}.tar.bz2
 Requires:   chromium
 BuildRequires:  desktop-file-utils
 
@@ -31,4 +31,4 @@ desktop-file-install --delete-original       \
 %defattr(-,root,root,-)
 %{_datadir}/webdialer
 %{_datadir}/applications/webdialer.desktop
-%{_datadir}/pixmaps/icon.png
+%{_datadir}/pixmaps/webdialer.png

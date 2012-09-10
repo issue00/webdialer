@@ -1,0 +1,13 @@
+
+[Desktop Entry]
+Version=1.0
+Name=WebDialer
+Comment=HTML hands free dialer app
+GenericName=WebDialer
+Exec=chromium-browser --enable-plugins --enable-extensions --enable-user-scripts --enable-printing --enable-sync --use-gl=egl --ignore-gpu-blacklist --auto-ssl-client-auth %U --app-id=pcalifdijfgkblklmnofmioajppkaalb  --load-extension=/usr/share/webdialer/ --no-first-run
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=WebDialer
+StartupWMClass=Chromium
+StartupNotify=true
